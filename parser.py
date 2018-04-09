@@ -45,19 +45,19 @@ def parse_email(msg):
     return payload
 
 # Define directories
-sample_dir = os.path.join(os.getcwd(), "preprocessed")
-pp1_dir = os.path.join(os.getcwd(), "trec07p", "data")
+dest_dir = os.path.join(os.getcwd(), "mp3data", "preprocessed")
+src_dir = os.path.join(os.getcwd(), "trec07p", "data")
 
 # For each of the files:
 ctr = 0
 filename = ""
 try:
-    for f in os.listdir(sample_dir):
-        filename = f # For debugging
-        msg = email.message_from_string(open(os.path.join(sample_dir, f), encoding='utf-8', errors='replace').read())
+    for f in range(n):
+        filename = "inmail.{}".format(f+1)
+        msg = email.message_from_string(open(os.path.join(src_dir, filename), encoding='utf-8', errors='replace').read())
 
         # Open file for writing
-        fo = open(os.path.join(pp1_dir, f), "w")
+        fo = open(os.path.join(dest_dir, filename), "w")
 
         # Get the payload
         payload = parse_email(msg)
