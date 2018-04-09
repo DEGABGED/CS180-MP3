@@ -27,8 +27,30 @@ def payload_preprocess(part):
 
     return raw_payload
 
+# Takes in an email object, returns a string containing the parsed email
+def parse_email(msg):
+    '''
+    payload = msg.get_payload()
+
+    # If the MIME type is message/rfc822, it is read as an email within an email
+    while msg.get_content_type() == "message/rfc822":
+        msg = payload[0]
+        payload = msg.get_payload()
+        '''
+
+    # MIME parsing
+    payload = ''
+    if msg.is_multipart():
+        for part in msg.walk():
+            if part.get_content_maintype() in ["text", "message"] and not part.is_multipart():
+                payload += payload_preprocess(part)
+    else:
+        payload += payload_preprocess(msg)
+
+    return payload
+
 # Define directories
-sample_dir = os.path.join(os.getcwd(), "isolate")
+sample_dir = os.path.join(os.getcwd(), "sample")
 pp1_dir = os.path.join(os.getcwd(), "pp1")
 
 # For each of the files:
@@ -46,6 +68,7 @@ try:
         payload = "Subject: {}".format(msg['Subject'])
 
         # MIME Parsing
+        '''
         if msg.is_multipart():
             for part in msg.walk():
                 # Filter out certain types of content (images, etc)
@@ -56,6 +79,8 @@ try:
                     payload += payload_preprocess(part)
         else:
             payload = payload_preprocess(msg)
+            '''
+        payload += parse_email(msg)
 
         # Write payload and close file
         fo.write(str(payload))
@@ -69,5 +94,6 @@ try:
 except:
     e = sys.exc_info()[0]
     print("\nError at {}: {}".format(filename, str(e)))
+    raise e
 
 print('')
