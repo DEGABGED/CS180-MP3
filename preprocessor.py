@@ -6,11 +6,12 @@ import re
 #msg = email.message_from_string(open("sample/inmail.65062").read())
 #payload = msg.get_payload()
 n = 75419
+training = 0.6 * n
 
 # Precompilation of regexes
 pp_html = re.compile('<[^>]+?>')
 pp_spaces = re.compile('(\s)\s+')
-pp_nonword = re.compile('[^a-zA-Z0-9-]+')
+pp_nonword = re.compile('[^a-zA-Z0-9]+')
 
 def payload_preprocess(part):
     raw_payload = part.get_payload()
@@ -45,7 +46,8 @@ def parse_email(msg):
     return payload
 
 # Define directories
-dest_dir = os.path.join(os.getcwd(), "mp3data", "preprocessed")
+train_dir = os.path.join(os.getcwd(), "mp3data", "preprocessed", "training")
+test_dir = os.path.join(os.getcwd(), "mp3data", "preprocessed", "test")
 src_dir = os.path.join(os.getcwd(), "trec07p", "data")
 
 # For each of the files:
@@ -57,7 +59,10 @@ try:
         msg = email.message_from_string(open(os.path.join(src_dir, filename), encoding='utf-8', errors='replace').read())
 
         # Open file for writing
-        fo = open(os.path.join(dest_dir, filename), "w")
+        if f < training:
+            fo = open(os.path.join(train_dir, filename), "w")
+        else:
+            fo = open(os.path.join(test_dir, filename), "w")
 
         # Get the payload
         payload = parse_email(msg)
