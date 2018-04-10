@@ -4,4 +4,5 @@ pp1/
 mp3data/
 *.*gz
 *.swp
+*.csv
 words.txt
