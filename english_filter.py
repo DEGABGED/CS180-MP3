@@ -12,7 +12,7 @@ n = 45252
 dc_digit = re.compile('\d')
 
 # Define directories
-src_dir = os.path.join(os.getcwd(), "mp3data", "preprocessed", "training")
+src_dir = os.path.join(os.getcwd(), "mp3data", "preprocessed")
 dest_dir = os.path.join(os.getcwd(), "mp3data")
 
 # Load English dictionary
@@ -24,13 +24,16 @@ with open("words.txt") as f:
 # Write to dictionary.txt
 fo = open(os.path.join(dest_dir, "dictionary.txt"), "w")
 
+# Load the training set list
+train_list = open(os.path.join(dest_dir, "training_set.txt"), "r")
+
 # For each of the files
 ctr = 0
 size = 0
 filename = ""
 try:
-    for f in range(n):
-        filename = "inmail.{}".format(f+1)
+    for filename in train_list:
+        filename = filename.strip()
         msg = open(os.path.join(src_dir, filename), encoding='utf-8', errors='replace').read()
 
         # For each word in the string, check if English
@@ -54,3 +57,6 @@ except:
     raise(e)
 
 print('')
+
+fo.close()
+train_list.close()

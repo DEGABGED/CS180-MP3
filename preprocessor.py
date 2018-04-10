@@ -46,8 +46,7 @@ def parse_email(msg):
     return payload
 
 # Define directories
-train_dir = os.path.join(os.getcwd(), "mp3data", "preprocessed", "training")
-test_dir = os.path.join(os.getcwd(), "mp3data", "preprocessed", "test")
+dest_dir = os.path.join(os.getcwd(), "mp3data", "preprocessed")
 src_dir = os.path.join(os.getcwd(), "trec07p", "data")
 
 # For each of the files:
@@ -59,10 +58,7 @@ try:
         msg = email.message_from_string(open(os.path.join(src_dir, filename), encoding='utf-8', errors='replace').read())
 
         # Open file for writing
-        if f < training:
-            fo = open(os.path.join(train_dir, filename), "w")
-        else:
-            fo = open(os.path.join(test_dir, filename), "w")
+        fo = open(os.path.join(dest_dir, filename), "w")
 
         # Get the payload
         payload = parse_email(msg)
