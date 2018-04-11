@@ -6,3 +6,4 @@ mp3data/
 *.swp
 *.csv
 words.txt
+*.npz

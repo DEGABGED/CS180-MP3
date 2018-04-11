@@ -1,6 +1,7 @@
 import os
 import sys
 import re
+import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 
 # Function to convert list to string
@@ -38,11 +39,16 @@ rows = len(files)
 
 X = vectorizer.fit_transform(files)
 
+print(str(X))
 print("Done vectorizing, will now print to CSV")
 
 # Import to csv file
-fo = open(os.path.join(data_dir, "dataset-test.csv"), 'w')
+#fo = open(os.path.join(data_dir, "dataset-training.csv"), 'w')
+#fo_csr = open(os.path.join(data_dir, "dataset-training-sparse.npz"), 'w')
 
+np.savez('dataset-test-sparse.npz', data=X.data, indices=X.indices, indptr=X.indptr, shape=X.shape)
+
+'''
 for r in range(rows):
     row = X[r].toarray()[0]
     #fo.write(list2str(X[r].toarray()[0].tolist()))
@@ -57,3 +63,4 @@ for r in range(rows):
 fo.close()
 training_set.close()
 test_set.close()
+'''
