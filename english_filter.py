@@ -2,11 +2,15 @@ import os
 import sys
 import re
 import enchant
+from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
 
 d = enchant.Dict("en_US")
 
 # Define our dictionary
 mp_dict = {}
+stop_dict = {}
+stem_dict = {}
 
 n = 45252
 dc_digit = re.compile('\d')
@@ -23,6 +27,12 @@ with open("words.txt") as f:
 
 # Write to dictionary.txt
 fo = open(os.path.join(dest_dir, "dictionary.txt"), "w")
+fo_stop = open(os.path.join(dest_dir, "dictionary_stopwords.txt"), "w")
+fo_stem = open(os.path.join(dest_dir, "dictionary_stemwords.txt"), "w")
+
+# Load corpora and stemmer
+stops = stopwords.words('english')
+stems = PorterStemmer()
 
 # Load the training set list
 train_list = open(os.path.join(dest_dir, "training_set.txt"), "r")
@@ -41,11 +51,29 @@ try:
         words = msg.split()
         for w in words:
             wl = w.lower()
-            if not bool(re.search(dc_digit, w)) and wl in en_dict and wl not in mp_dict:
+            if bool(re.search(dc_digit, w)) or wl not in en_dict:
+                continue
+
+            w_stem = stems.stem(wl)
+
+            # Writing the actual word in the original dictionary
+            if wl not in mp_dict:
                 mp_dict[wl] = 1
                 size += 1
                 fo.write(wl)
                 fo.write('\n')
+
+            # Stopwords-less dictionary
+            if wl not in stop_dict and wl not in stops:
+                stop_dict[wl] = 1
+                fo_stop.write(wl)
+                fo_stop.write('\n')
+
+            # Stemwords dictionary
+            if w_stem not in stem_dict:
+                stem_dict[w_stem] = 1
+                fo_stem.write(w_stem)
+                fo_stem.write('\n')
 
         # Print how many have been preprocessed so far
         ctr += 1
@@ -59,4 +87,6 @@ except:
 print('')
 
 fo.close()
+fo_stop.close()
+fo_stem.close()
 train_list.close()
