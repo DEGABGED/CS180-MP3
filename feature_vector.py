@@ -3,6 +3,7 @@ import sys
 import re
 import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
+import scipy.sparse
 
 # Function to convert list to string
 fv_noncsv = re.compile('[\[|\]|\s]')
@@ -12,7 +13,7 @@ def list2str(l):
 
 # Define directories and dictionary
 data_dir = os.path.join(os.getcwd(), "mp3data")
-training_dir = os.path.join(os.getcwd(), "mp3data", "preprocessed")
+preprocessed_dir = os.path.join(os.getcwd(), "mp3data", "preprocessed")
 mp_dict = {}
 fv_dict = {}
 
@@ -33,20 +34,21 @@ vectorizer = CountVectorizer(vocabulary=mp_dict)
 
 ## TRAINING SET
 # Create the list of file contents
-path_abs = lambda rel: open(os.path.join(training_dir, rel.strip()), "r").read()
-files = [path_abs(x) for x in test_set]
+path_abs = lambda rel: open(os.path.join(preprocessed_dir, rel.strip()), "r").read()
+## CHANGE THIS TO CHANGE SETS ##
+files = [path_abs(x) for x in training_set]
 rows = len(files)
 
 X = vectorizer.fit_transform(files)
 
-print(str(X))
 print("Done vectorizing, will now print to CSV")
 
 # Import to csv file
 #fo = open(os.path.join(data_dir, "dataset-training.csv"), 'w')
 #fo_csr = open(os.path.join(data_dir, "dataset-training-sparse.npz"), 'w')
 
-np.savez('dataset-test-sparse.npz', data=X.data, indices=X.indices, indptr=X.indptr, shape=X.shape)
+#np.savez('dataset-test-sparse.npz', data=X.data, indices=X.indices, indptr=X.indptr, shape=X.shape)
+scipy.sparse.save_npz('dataset-training-sparse', X)
 
 '''
 for r in range(rows):
