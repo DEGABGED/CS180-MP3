@@ -12,57 +12,77 @@ def list2str(l):
     return re.sub(fv_noncsv, '', str(l))
 
 # Define directories and dictionary
-data_dir = os.path.join(os.getcwd(), "mp3data")
-preprocessed_dir = os.path.join(os.getcwd(), "mp3data", "preprocessed")
-mp_dict = {}
-fv_dict = {}
+#data_dir = os.path.join(os.getcwd(), "mp3data")
+#preprocessed_dir = os.path.join(os.getcwd(), "mp3data", "preprocessed")
 
-# Read the dictionary.txt for easy hashing
-ndx = 0
-with open(os.path.join(data_dir, "dictionary.txt")) as f:
-    for line in f:
-        line = line.strip()
-        mp_dict[line] = ndx
-        ndx += 1
+def gen_feature_matrix(data_dir, preprocessed_dir, dictionary="", gen_csv=True, gen_npz=True):
+    # Define dictionaries
+    mp_dict = {}
+    fv_dict = {}
 
-# Get the training set
-training_set = open(os.path.join(data_dir, "training_set.txt"), "r")
-test_set = open(os.path.join(data_dir, "test_set.txt"), "r")
+    # Read the dictionary for easy hashing
+    ndx = 0
+    with open(os.path.join(data_dir, "dictionary{}.txt".format(dictionary))) as f:
+        for line in f:
+            line = line.strip()
+            mp_dict[line] = ndx
+            ndx += 1
 
-# Create the vectorizer
-vectorizer = CountVectorizer(vocabulary=mp_dict)
+    # Get the training set
+    training_set = open(os.path.join(data_dir, "training_set.txt"), "r")
+    test_set = open(os.path.join(data_dir, "test_set.txt"), "r")
 
-## TRAINING SET
-# Create the list of file contents
-path_abs = lambda rel: open(os.path.join(preprocessed_dir, rel.strip()), "r").read()
-## CHANGE THIS TO CHANGE SETS ##
-files = [path_abs(x) for x in training_set]
-rows = len(files)
+    # Create the vectorizer
+    vectorizer = CountVectorizer(vocabulary=mp_dict)
 
-X = vectorizer.fit_transform(files)
+    # Create the list of file contents
+    path_abs = lambda rel: open(os.path.join(preprocessed_dir, rel.strip()), "r").read()
 
-print("Done vectorizing, will now print to CSV")
+    training_files = [path_abs(x) for x in training_set]
+    test_files = [path_abs(x) for x in test_set]
 
-# Import to csv file
-#fo = open(os.path.join(data_dir, "dataset-training.csv"), 'w')
-#fo_csr = open(os.path.join(data_dir, "dataset-training-sparse.npz"), 'w')
+    training_rows = len(training_files)
+    test_rows = len(test_files)
 
-#np.savez('dataset-test-sparse.npz', data=X.data, indices=X.indices, indptr=X.indptr, shape=X.shape)
-scipy.sparse.save_npz('dataset-training-sparse', X)
+    training_X = vectorizer.fit_transform(training_files)
+    test_X = vectorizer.fit_transform(test_files)
 
-'''
-for r in range(rows):
-    row = X[r].toarray()[0]
-    #fo.write(list2str(X[r].toarray()[0].tolist()))
-    for c in range(len(row)):
-        if c > 0:
-            fo.write(',')
-        fo.write(str(row[c]))
-    fo.write('\n')
-    sys.stdout.write("\r{}/{}".format(r,rows))
-    sys.stdout.flush()
+    print("Done vectorizing.")
 
-fo.close()
-training_set.close()
-test_set.close()
-'''
+    if gen_npz:
+        print("Writing to NPZ")
+        scipy.sparse.save_npz("dataset-training-sparse{}".format(dictionary), training_X)
+        scipy.sparse.save_npz("dataset-test-sparse{}".format(dictionary), test_X)
+
+    if gen_csv:
+        print("Writing to CSV")
+        # TRAINING
+        fo = open(os.path.join(data_dir, "dataset-training{}.csv".format(dictionary)), 'w')
+        for r in range(training_rows):
+            row = training_X[r].toarray()[0]
+            for c in range(len(row)):
+                if c > 0:
+                    fo.write(',')
+                fo.write(str(row[c]))
+            fo.write('\n')
+            sys.stdout.write("\rTraining set: {}/{}".format(r,training_rows))
+            sys.stdout.flush()
+        fo.close()
+        print('\nDone\n')
+
+        # TEST
+        fo = open(os.path.join(data_dir, "dataset-test{}.csv".format(dictionary)), 'w')
+        for r in range(test_rows):
+            row = test_X[r].toarray()[0]
+            for c in range(len(row)):
+                if c > 0:
+                    fo.write(',')
+                fo.write(str(row[c]))
+            fo.write('\n')
+            sys.stdout.write("\rTest set: {}/{}".format(r,test_rows))
+            sys.stdout.flush()
+        fo.close()
+        print('\nDone\n')
+
+    training_set.close()
+    test_set.close()

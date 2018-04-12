@@ -1,5 +1,7 @@
 trec07p/
 mp3data/
 .git/
+pp1/
+sample/
 *.tgz
 *.swp

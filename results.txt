@@ -1,0 +1,55 @@
+### Running original models
+###########################
+
+# Bernoulli
+Training: 92.83125607707946
+Test: 90.51612689362548)
+
+# Multinomial
+Training: 95.41898700609917
+Test: 94.11940199555806
+
+### Running lambda smoothings (Multinomial)
+##########################################
+
+# 0.01
+Training: 95.81675948024397
+Test: 94.25531209599895
+
+# 0.1
+Training: 95.66648987890038
+Test: 94.2188484105148
+
+# 0.2
+Training: 95.60019446654292
+Test: 94.20227400802202
+
+# 0.5
+Training: 95.52947936002829
+Test: 94.1326615175523
+
+# 1
+Training: 95.41898700609917
+Test: 94.11940199555806
+
+### Running stopwords dictionary
+################################
+
+# Bernoulli
+Training: 93.8168478741271
+Test: 91.63655650213809
+
+# Multinomial
+Training: 95.56262706620701
+Test: 94.30835018397586
+
+### Running stemwords dictionary
+################################
+
+# Bernoulli
+Training: 92.442322991249
+Test: 89.47525441707826
+
+# Multinomial
+Training: 95.50738088924247
+Test: 93.94702820963305
