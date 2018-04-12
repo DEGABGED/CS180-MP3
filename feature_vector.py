@@ -11,10 +11,6 @@ fv_noncsv = re.compile('[\[|\]|\s]')
 def list2str(l):
     return re.sub(fv_noncsv, '', str(l))
 
-# Define directories and dictionary
-#data_dir = os.path.join(os.getcwd(), "mp3data")
-#preprocessed_dir = os.path.join(os.getcwd(), "mp3data", "preprocessed")
-
 def gen_feature_matrix(data_dir, preprocessed_dir, dictionary="", gen_csv=True, gen_npz=True):
     # Define dictionaries
     mp_dict = {}
@@ -47,15 +43,15 @@ def gen_feature_matrix(data_dir, preprocessed_dir, dictionary="", gen_csv=True, 
     training_X = vectorizer.fit_transform(training_files)
     test_X = vectorizer.fit_transform(test_files)
 
-    print("Done vectorizing.")
+    print("  Done vectorizing.")
 
     if gen_npz:
-        print("Writing to NPZ")
+        print("  Writing to NPZ...")
         scipy.sparse.save_npz("dataset-training-sparse{}".format(dictionary), training_X)
         scipy.sparse.save_npz("dataset-test-sparse{}".format(dictionary), test_X)
 
     if gen_csv:
-        print("Writing to CSV")
+        print("  Writing to CSV...")
         # TRAINING
         fo = open(os.path.join(data_dir, "dataset-training{}.csv".format(dictionary)), 'w')
         for r in range(training_rows):
@@ -65,10 +61,10 @@ def gen_feature_matrix(data_dir, preprocessed_dir, dictionary="", gen_csv=True, 
                     fo.write(',')
                 fo.write(str(row[c]))
             fo.write('\n')
-            sys.stdout.write("\rTraining set: {}/{}".format(r,training_rows))
+            sys.stdout.write("\r    Training set: {}/{}".format(r,training_rows))
             sys.stdout.flush()
         fo.close()
-        print('\nDone\n')
+        print('\n  Done\n')
 
         # TEST
         fo = open(os.path.join(data_dir, "dataset-test{}.csv".format(dictionary)), 'w')
@@ -79,10 +75,10 @@ def gen_feature_matrix(data_dir, preprocessed_dir, dictionary="", gen_csv=True, 
                     fo.write(',')
                 fo.write(str(row[c]))
             fo.write('\n')
-            sys.stdout.write("\rTest set: {}/{}".format(r,test_rows))
+            sys.stdout.write("\r    Test set: {}/{}".format(r,test_rows))
             sys.stdout.flush()
         fo.close()
-        print('\nDone\n')
+        print('\n  Done\n')
 
     training_set.close()
     test_set.close()

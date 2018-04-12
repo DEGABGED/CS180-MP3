@@ -7,10 +7,6 @@ import re
 n = 75419
 training = 0.6 * n
 
-# Define directories
-#dest_dir = os.path.join(os.getcwd(), "mp3data", "preprocessed")
-#src_dir = os.path.join(os.getcwd(), "trec07p", "data")
-
 # Precompilation of regexes
 pp_html = re.compile('<[^>]+?>')
 pp_spaces = re.compile('(\s)\s+')

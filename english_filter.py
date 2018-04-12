@@ -14,10 +14,6 @@ stem_dict = {}
 n = 45252
 dc_digit = re.compile('\d')
 
-# Define directories
-#src_dir = os.path.join(os.getcwd(), "mp3data", "preprocessed")
-#dest_dir = os.path.join(os.getcwd(), "mp3data")
-
 def gen_dictionary(src_dir, dest_dir):
     # Load English dictionary (words.txt in the same directory)
     en_dict = {}
